@@ -1,4 +1,4 @@
-import { createApp, nextTick } from 'vue'
+import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
 import { createPinia } from 'pinia'
@@ -10,9 +10,7 @@ const pinia = createPinia()
 app.use(pinia)
 app.use(router)
 
-app.mount('#app')
+const authStore = useAuthStore()
+authStore.init()
 
-nextTick(() => {
-  const authStore = useAuthStore()
-  authStore.init()
-})
+app.mount('#app')

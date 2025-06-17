@@ -15,8 +15,9 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { createUserWithEmailAndPassword } from 'firebase/auth'
-import { auth } from '../firebase.js'
+import { auth, db } from '../firebase.js'
 import { useUserStore } from '@/context/user'
+import { doc, setDoc } from 'firebase/firestore'
 
 const router = useRouter()
 const email = ref('')
@@ -36,13 +37,28 @@ const handleRegister = async () => {
     const userCredential = await createUserWithEmailAndPassword(auth, email.value, password.value)
     const user = userCredential.user
 
-    // Actualizar estado global con usuario creado
+    // Crear doc usuario en Firestore con datos iniciales
+    const userDocRef = doc(db, 'users', user.uid)
+    await setDoc(userDocRef, {
+      uid: user.uid,
+      email: user.email,
+      displayName: user.email,
+      photoURL: null,
+      friends: [],
+      places: []
+    })
+
+    // Actualizar estado global con datos completos
     userStore.setUser({
       uid: user.uid,
       email: user.email,
+      displayName: user.email,
+      photoURL: null,
+      friends: [],
+      places: []
     })
 
-    router.push('/')
+    router.push('/app/new')
   } catch (err) {
     error.value = 'Error al registrar: ' + err.message
   }

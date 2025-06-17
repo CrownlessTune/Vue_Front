@@ -14,8 +14,9 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { signInWithEmailAndPassword } from 'firebase/auth'
-import { auth } from '../firebase.js'
+import { auth, db } from '../firebase.js'
 import { useUserStore } from '@/context/user'
+import { doc, getDoc } from 'firebase/firestore'
 
 const router = useRouter()
 const email = ref('')
@@ -29,13 +30,29 @@ const handleLogin = async () => {
     const userCredential = await signInWithEmailAndPassword(auth, email.value, password.value)
     const user = userCredential.user
 
-    // Actualizar estado global
-    userStore.setUser({
-      uid: user.uid,
-      email: user.email,
-    })
+    const userDocRef = doc(db, 'users', user.uid)
+    const userDocSnap = await getDoc(userDocRef)
 
-    router.push('/')
+    let userData
+    if (userDocSnap.exists()) {
+      userData = userDocSnap.data()
+    } else {
+      userData = {
+        uid: user.uid,
+        email: user.email,
+        displayName: user.email,
+        photoURL: null,
+        friends: [],
+        places: []
+      }
+    }
+
+    // Guardar en store y sessionStorage
+    userStore.setUser(userData)
+    sessionStorage.setItem('user', JSON.stringify(userData))
+
+    // Redirigir a zona privada
+    router.push('/app/new') // o la ruta protegida que uses
   } catch (err) {
     error.value = 'Error al iniciar sesión: ' + err.message
   }

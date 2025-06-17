@@ -10,7 +10,7 @@ export const useAuthStore = defineStore('auth', {
     init() {
       const auth = getAuth()
       onAuthStateChanged(auth, (user) => {
-        this.user = user
+        this.user = user ? { uid: user.uid, email: user.email } : null
         this.loading = false
         if (user) {
           sessionStorage.setItem('auth', 'true')
@@ -22,6 +22,8 @@ export const useAuthStore = defineStore('auth', {
     logout() {
       const auth = getAuth()
       signOut(auth)
+      this.user = null
+      sessionStorage.removeItem('auth')
     }
   }
 })

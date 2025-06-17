@@ -2,16 +2,10 @@
   <div class="home">
     <h1>CadizInteresa</h1>
     <p>Descubre y comparte los lugares más especiales de Cádiz.</p>
-    <div class="buttons">
-      <button @click="$router.push('/login')">Iniciar sesión</button>
-      <button @click="$router.push('/register')">Registrarse</button>
-    </div>
   </div>
 </template>
 
-<script setup>
-// No se necesita JS por ahora
-</script>
+
 
 <style scoped>
 .home {

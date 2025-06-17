@@ -1,7 +1,7 @@
 <template>
   <div>
     <NavbarPrivate />
-    <main v-if="!loading">
+    <main v-if="!authStore.loading">
       <router-view />
     </main>
     <div v-else class="loading">Cargando...</div>
@@ -9,18 +9,20 @@
 </template>
 
 <script setup>
+import { watch, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { onMounted, watch } from 'vue'
 import NavbarPrivate from '../components/NavbarPrivate.vue'
 import { useAuthStore } from '@/context/auth'
 
 const authStore = useAuthStore()
 const router = useRouter()
 
-// Si no estás inicializando el store en main.js, descomenta la línea siguiente
-// authStore.init()
+// Aseguramos que el store esté inicializado (solo si no se hizo en main.js)
+if (!authStore.user && authStore.loading) {
+  authStore.init()
+}
 
-// Redirigir si no está autenticado cuando termine de cargar
+// Observamos cuando termine la carga de auth y redirigimos si no hay usuario
 watch(
   () => authStore.loading,
   (loading) => {
@@ -30,9 +32,9 @@ watch(
   }
 )
 
-// Por si no se ha inicializado antes, se puede asegurar la inicialización aquí
+// Por si el usuario no está y ya no está cargando, redirigimos también en montaje
 onMounted(() => {
-  if (!authStore.user && !authStore.loading) {
+  if (!authStore.loading && !authStore.user) {
     router.push('/login')
   }
 })

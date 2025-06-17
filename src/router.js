@@ -34,11 +34,28 @@ const router = createRouter({
   routes
 })
 
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   const authStore = useAuthStore()
-  const isLoggedIn = sessionStorage.getItem('auth')
+
+  // Esperar que termine de cargar el estado de auth
+  if (authStore.loading) {
+    await new Promise(resolve => {
+      const unwatch = authStore.$subscribe(() => {
+        if (!authStore.loading) {
+          unwatch()
+          resolve()
+        }
+      })
+    })
+  }
+
+  const isLoggedIn = !!authStore.user
+
   if (to.meta.requiresAuth && !isLoggedIn) {
-    next('/')
+    next('/login')
+  } else if ((to.path === '/login' || to.path === '/register') && isLoggedIn) {
+    // Si ya está logueado, evitar volver a login o registro
+    next('/app/profile')
   } else {
     next()
   }
