@@ -15,14 +15,11 @@ import { useAuthStore } from '@/context/auth'
 
 const authStore = useAuthStore()
 
-// Aseguramos que el store esté inicializado (si no se hizo en main.js)
 if (authStore.loading && !authStore.user) {
   authStore.init()
 }
 
-// Opcional: si quieres hacer algo cuando cargue, aquí
 onMounted(() => {
-  // por ejemplo, podrías precargar algo o controlar la UI
 })
 </script>
 

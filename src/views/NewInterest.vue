@@ -1,6 +1,6 @@
 <script setup>
-import '@/css/PuntosDeInteres.css'
 import { ref, onMounted } from 'vue'
+import '../css/PuntosDeInteres.css'
 import {
   collection,
   onSnapshot,
@@ -8,6 +8,9 @@ import {
   query,
   where,
   serverTimestamp,
+  doc,
+  updateDoc,
+  deleteDoc,
 } from 'firebase/firestore'
 import { db, auth } from '@/firebase'
 import { useUserStore } from '@/context/user'
@@ -25,6 +28,8 @@ const publicAndFriendsPoints = ref([])
 
 const userStore = useUserStore()
 const currentUser = auth.currentUser
+
+const editingId = ref(null)
 
 function onFileChange(e) {
   const file = e.target.files[0]
@@ -58,34 +63,75 @@ async function submitPoint() {
   if (!currentUser) return alert('No estás autenticado')
   loading.value = true
 
-  let imagePath = null
   try {
+    let imagePath = null
     if (selectedFile.value) {
       imagePath = await uploadImageToImageKit(selectedFile.value)
     }
 
-    await addDoc(collection(db, 'puntos_interes'), {
-      nombre: pointName.value,
-      descripcion: descripcion.value,
-      coords: [lat.value, lng.value],
-      carpeta: carpeta.value,
-      isPublic: isPublic.value,
-      autorUID: currentUser.uid,
-      imagePath,
-      timestamp: serverTimestamp(),
-    })
+    if (editingId.value) {
+      const pointRef = doc(db, 'puntos_interes', editingId.value)
+      const updateData = {
+        nombre: pointName.value,
+        descripcion: descripcion.value,
+        coords: [lat.value, lng.value],
+        carpeta: carpeta.value,
+        isPublic: isPublic.value,
+        timestamp: serverTimestamp(),
+      }
+      if (imagePath) updateData.imagePath = imagePath
 
-    pointName.value = ''
-    descripcion.value = ''
-    lat.value = null
-    lng.value = null
-    carpeta.value = ''
-    isPublic.value = false
-    selectedFile.value = null
+      await updateDoc(pointRef, updateData)
+    } else {
+      await addDoc(collection(db, 'puntos_interes'), {
+        nombre: pointName.value,
+        descripcion: descripcion.value,
+        coords: [lat.value, lng.value],
+        carpeta: carpeta.value,
+        isPublic: isPublic.value,
+        autorUID: currentUser.uid,
+        imagePath: imagePath || null,
+        timestamp: serverTimestamp(),
+      })
+    }
+
+    resetForm()
   } catch (e) {
-    alert('Error añadiendo punto: ' + e.message)
+    alert('Error guardando punto: ' + e.message)
   } finally {
     loading.value = false
+  }
+}
+
+function resetForm() {
+  pointName.value = ''
+  descripcion.value = ''
+  lat.value = null
+  lng.value = null
+  carpeta.value = ''
+  isPublic.value = false
+  selectedFile.value = null
+  editingId.value = null
+}
+
+function editPoint(point) {
+  pointName.value = point.nombre
+  descripcion.value = point.descripcion
+  lat.value = point.coords[0]
+  lng.value = point.coords[1]
+  carpeta.value = point.carpeta
+  isPublic.value = point.isPublic
+  selectedFile.value = null
+  editingId.value = point.id
+  window.scrollTo({ top: 0, behavior: 'smooth' })
+}
+
+async function deletePoint(pointId) {
+  if (!confirm('¿Seguro que quieres eliminar este punto?')) return
+  try {
+    await deleteDoc(doc(db, 'puntos_interes', pointId))
+  } catch (e) {
+    alert('Error al eliminar: ' + e.message)
   }
 }
 
@@ -151,7 +197,11 @@ onMounted(() => {
       <input type="file" accept="image/*" @change="onFileChange" />
 
       <button type="submit" :disabled="loading">
-        {{ loading ? "Subiendo..." : "Añadir punto" }}
+        {{ loading ? (editingId ? "Guardando..." : "Subiendo...") : (editingId ? "Guardar cambios" : "Añadir punto") }}
+      </button>
+
+      <button v-if="editingId" type="button" @click="resetForm">
+        Cancelar edición
       </button>
     </form>
 
@@ -167,6 +217,10 @@ onMounted(() => {
             alt="Imagen del punto"
             class="point-image"
           />
+          <div class="actions">
+            <button @click="editPoint(p)">Editar</button>
+            <button @click="deletePoint(p.id)">Eliminar</button>
+          </div>
         </li>
       </ul>
     </section>
@@ -188,5 +242,3 @@ onMounted(() => {
     </section>
   </div>
 </template>
-
-

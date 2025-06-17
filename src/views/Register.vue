@@ -37,7 +37,6 @@ const handleRegister = async () => {
     const userCredential = await createUserWithEmailAndPassword(auth, email.value, password.value)
     const user = userCredential.user
 
-    // Crear doc usuario en Firestore con datos iniciales
     const userDocRef = doc(db, 'users', user.uid)
     await setDoc(userDocRef, {
       uid: user.uid,
@@ -48,7 +47,6 @@ const handleRegister = async () => {
       places: []
     })
 
-    // Actualizar estado global con datos completos
     userStore.setUser({
       uid: user.uid,
       email: user.email,

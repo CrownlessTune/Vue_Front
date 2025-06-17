@@ -37,7 +37,6 @@ const router = createRouter({
 router.beforeEach(async (to, from, next) => {
   const authStore = useAuthStore()
 
-  // Esperar que termine de cargar el estado de auth
   if (authStore.loading) {
     await new Promise(resolve => {
       const unwatch = authStore.$subscribe(() => {
@@ -54,7 +53,6 @@ router.beforeEach(async (to, from, next) => {
   if (to.meta.requiresAuth && !isLoggedIn) {
     next('/login')
   } else if ((to.path === '/login' || to.path === '/register') && isLoggedIn) {
-    // Si ya está logueado, evitar volver a login o registro
     next('/app/profile')
   } else {
     next()

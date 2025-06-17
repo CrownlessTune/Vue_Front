@@ -11,7 +11,7 @@
   "dependencies": {
     "@firebasegen/default-connector": "file:dataconnect-generated/js/default-connector",
     "browser-image-compression": "^2.0.2",
-    "firebase": "^11.9.0",
+    "firebase": "^11.9.1",
     "imagekit-javascript": "^4.0.1",
     "leaflet": "^1.9.4",
     "pinia": "^3.0.3",

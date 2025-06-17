@@ -22,9 +22,8 @@ import { useUserStore } from '@/context/user'
 import { updateDoc, doc } from 'firebase/firestore'
 import { db } from '../firebase.js'
 
-// Estas claves nunca en frontend real, solo aquí por prototipo
 const publicKey = 'public_01sDhg5IlkHf/GA3stxE7zaWi1A='
-const privateKey = 'private_BZuJI8NW1IWBFIJzDAmNtJzz0Vc=' // ¡No hagas esto en real!
+const privateKey = 'private_BZuJI8NW1IWBFIJzDAmNtJzz0Vc=' 
 
 const userStore = useUserStore()
 const userName = ref('')
@@ -47,15 +46,12 @@ const handleFileChange = (e) => {
   file.value = selected
 }
 
-// Función que "firma" la URL simulando backend
 function getSignature() {
-  // Firma dummy, en backend usarías un SDK o HMAC real
   const timestamp = Math.floor(Date.now() / 1000)
-  const signature = btoa(privateKey + timestamp) // solo para simular
+  const signature = btoa(privateKey + timestamp) 
   return { timestamp, signature }
 }
 
-// Subida + firma simulada totalmente frontend
 async function uploadToImageKit(file) {
   const url = 'https://upload.imagekit.io/api/v1/files/upload'
   const formData = new FormData()
@@ -69,10 +65,8 @@ async function uploadToImageKit(file) {
 
   const data = await res.json()
 
-  // Simulamos firma con función interna
   const { timestamp, signature } = getSignature()
 
-  // Construimos URL privado simulado
   const privateUrl = `${data.url}?tr=pr-true&ik-t=${timestamp}&ik-s=${signature}`
 
   return privateUrl

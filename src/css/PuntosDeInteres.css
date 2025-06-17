@@ -43,6 +43,15 @@ input[type="file"] {
   border: 1px solid var(--gris-suave);
   border-radius: 8px;
   background-color: #fff;
+  transition: border-color 0.3s ease;
+}
+
+input[type="number"]:focus,
+input[type="text"]:focus,
+textarea:focus,
+input[type="file"]:focus {
+  border-color: var(--azul-cadiz);
+  outline: none;
 }
 
 textarea {
@@ -55,6 +64,8 @@ label {
   align-items: center;
   gap: 0.5rem;
   font-weight: 500;
+  cursor: pointer;
+  user-select: none;
 }
 
 button {
@@ -65,10 +76,10 @@ button {
   border-radius: 8px;
   cursor: pointer;
   font-weight: bold;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-button:hover {
+button:hover:not(:disabled) {
   background-color: var(--azul-claro);
   color: var(--texto-oscuro);
 }
@@ -96,6 +107,7 @@ ul {
   display: flex;
   align-items: center;
   gap: 1rem;
+  flex-wrap: wrap;
 }
 
 .point-image {
@@ -104,4 +116,57 @@ ul {
   border-radius: 4px;
   object-fit: cover;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  flex-shrink: 0;
+}
+
+.actions {
+  margin-left: auto;
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.actions button {
+  background-color: var(--amarillo-cadiz);
+  color: var(--texto-oscuro);
+  padding: 0.4rem 0.8rem;
+  font-weight: 600;
+  border-radius: 6px;
+  border: none;
+  transition: background-color 0.3s ease;
+  cursor: pointer;
+}
+
+.actions button:hover {
+  background-color: #d9a22a;
+}
+
+.actions button:focus {
+  outline: 2px solid var(--azul-cadiz);
+  outline-offset: 2px;
+}
+
+/* Botón cancelar edición */
+.form > button[type="button"] {
+  background-color: #e63946;
+  color: var(--blanco);
+  margin-top: -0.5rem;
+  align-self: flex-start;
+  padding: 0.6rem 1.2rem;
+  font-weight: 600;
+}
+
+.form > button[type="button"]:hover {
+  background-color: #c5303f;
+}
+
+/* Responsive ajustes para puntos */
+@media (max-width: 500px) {
+  .point-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .actions {
+    margin-left: 0;
+  }
 }

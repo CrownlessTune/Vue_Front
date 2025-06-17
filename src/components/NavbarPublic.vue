@@ -16,16 +16,14 @@
   justify-content: center;
   gap: 1.5rem;
   align-items: center;
-  background-color: #f5f3f0; /* arena */
-  padding: 0 1rem;
+  background-color: #f5f3f0;
   height: 3rem;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
-  border-bottom: 2px solid #fcbf49; /* amarillo Cádiz */
-  z-index: 1000;
+  border-bottom: 2px solid #fcbf49; 
 }
 
 .nav-link {
-  color: #0077b6; /* azul Cádiz */
+  color: #0077b6; 
   font-weight: 600;
   text-decoration: none;
   font-size: 0.95rem;
@@ -38,7 +36,6 @@
   text-decoration: underline;
 }
 
-/* Para evitar que el contenido quede debajo de la navbar fija */
 body {
   padding-top: 3rem;
 }

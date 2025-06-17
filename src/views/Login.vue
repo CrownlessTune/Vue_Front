@@ -47,12 +47,10 @@ const handleLogin = async () => {
       }
     }
 
-    // Guardar en store y sessionStorage
     userStore.setUser(userData)
     sessionStorage.setItem('user', JSON.stringify(userData))
 
-    // Redirigir a zona privada
-    router.push('/app/new') // o la ruta protegida que uses
+    router.push('/app/new') 
   } catch (err) {
     error.value = 'Error al iniciar sesión: ' + err.message
   }

@@ -4,7 +4,7 @@ import { collection, query, where, onSnapshot } from 'firebase/firestore'
 import { db } from '@/firebase'
 
 const publicPoints = ref([])
-const selectedPoint = ref(null)  // Punto seleccionado para modal
+const selectedPoint = ref(null)  
 const showModal = ref(false)
 
 onMounted(() => {
@@ -56,7 +56,6 @@ function closeModal() {
       <p v-else class="no-points">No hay puntos públicos aún.</p>
     </section>
 
-    <!-- Modal -->
     <div v-if="showModal" class="modal-overlay" @click.self="closeModal">
       <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
         <button class="close-btn" @click="closeModal" aria-label="Cerrar modal">&times;</button>
