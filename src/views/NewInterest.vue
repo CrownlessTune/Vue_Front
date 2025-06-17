@@ -1,112 +1,241 @@
-<template>
-  <div class="map-container">
-    <div id="map" class="h-[80vh] rounded-md" />
-    <input type="file" accept="image/*" ref="imageInput" class="mb-2" />
-    <button @click="addNewMarker" class="btn-primary">Añadir punto de interés</button>
-  </div>
-</template>
-
 <script setup>
 import { ref, onMounted } from 'vue'
-import L from 'leaflet'
-import 'leaflet/dist/leaflet.css'
-import { collection, addDoc, onSnapshot, deleteDoc, doc } from 'firebase/firestore'
+import {
+  collection,
+  onSnapshot,
+  addDoc,
+  query,
+  where,
+  serverTimestamp,
+} from 'firebase/firestore'
 import { db, auth } from '@/firebase'
 import { useUserStore } from '@/context/user'
-import { uploadImage, deleteImage } from '@/utils/imageUpload'
 
-const map = ref(null)
-const markers = ref([])
-const imageInput = ref(null)
+const pointName = ref('')
+const descripcion = ref('')
+const lat = ref(null)
+const lng = ref(null)
+const carpeta = ref('')
+const isPublic = ref(false)
+const selectedFile = ref(null)
+const loading = ref(false)
+const myPoints = ref([])
+const publicAndFriendsPoints = ref([])
+
 const userStore = useUserStore()
+const currentUser = auth.currentUser
 
-onMounted(() => {
-  map.value = L.map('map').setView([36.5297, -6.2929], 11)
+function onFileChange(e) {
+  const file = e.target.files[0]
+  if (file) selectedFile.value = file
+}
 
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '© OpenStreetMap contributors'
-  }).addTo(map.value)
+async function uploadImageToImageKit(file) {
+  const url = 'https://upload.imagekit.io/api/v1/files/upload'
+  const formData = new FormData()
+  formData.append('file', file)
+  formData.append('fileName', file.name)
+  formData.append('folder', `/puntos_interes/${carpeta.value || 'general'}`)
 
-  onSnapshot(collection(db, 'puntos_interes'), snapshot => {
-    markers.value.forEach(marker => marker.remove())
-    markers.value = []
-    snapshot.forEach(docSnap => {
-      const data = docSnap.data()
-      const marker = L.marker([data.coords.lat, data.coords.lng]).addTo(map.value)
-      let popupContent = `<b>${data.nombre}</b><br/>${data.descripcion}`
-      if (data.imageUrl) {
-        popupContent += `<br/><img src="${data.imageUrl}" style="max-width:200px; border-radius: 8px;">`
-      }
-      marker.bindPopup(popupContent)
+  const privateKey = 'private_BZuJI8NW1IWBFIJzDAmNtJzz0Vc='
+  const authHeader = 'Basic ' + btoa(privateKey + ':')
 
-      if (data.autorUID === auth.currentUser?.uid) {
-        marker.on('click', async () => {
-          if (confirm('¿Eliminar este punto?')) {
-            await deleteDoc(doc(db, 'puntos_interes', docSnap.id))
-            if (data.imagePath) {
-              await deleteImage(data.imagePath)
-            }
-          }
-        })
-      }
-
-      markers.value.push(marker)
-    })
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: {
+      Authorization: authHeader,
+    },
+    body: formData,
   })
-})
 
-const addNewMarker = () => {
-  if (!auth.currentUser) {
-    alert('Debes estar logueado para añadir un punto de interés.')
-    return
-  }
+  const data = await res.json()
+  if (!res.ok) throw new Error(data.message || 'Error al subir imagen')
+  return data.url
+}
 
-  alert('Haz click en el mapa para añadir el punto de interés')
+async function submitPoint() {
+  if (!currentUser) return alert('No estás autenticado')
+  loading.value = true
 
-  map.value.once('click', async e => {
-    const nombre = prompt('Nombre del lugar:')
-    const descripcion = prompt('Descripción:')
-    if (!nombre || !descripcion) return
-
-    const file = imageInput.value?.files?.[0]
-    let imageUrl = null
-    let imagePath = null
-
-    if (file) {
-      try {
-        const upload = await uploadImage(file, auth.currentUser.uid)
-        imageUrl = upload.url
-        imagePath = upload.path
-      } catch (err) {
-        alert('Error al subir la imagen')
-        return
-      }
+  let imagePath = null
+  try {
+    if (selectedFile.value) {
+      imagePath = await uploadImageToImageKit(selectedFile.value)
     }
 
     await addDoc(collection(db, 'puntos_interes'), {
-      nombre,
-      descripcion,
-      coords: e.latlng,
-      autorUID: auth.currentUser.uid,
-      timestamp: Date.now(),
-      imageUrl,
-      imagePath
+      nombre: pointName.value,
+      descripcion: descripcion.value,
+      coords: [lat.value, lng.value],
+      carpeta: carpeta.value,
+      isPublic: isPublic.value,
+      autorUID: currentUser.uid,
+      imagePath,
+      timestamp: serverTimestamp(),
     })
 
-    imageInput.value.value = null
-  })
+    pointName.value = ''
+    descripcion.value = ''
+    lat.value = null
+    lng.value = null
+    carpeta.value = ''
+    isPublic.value = false
+    selectedFile.value = null
+  } catch (e) {
+    alert('Error añadiendo punto: ' + e.message)
+  } finally {
+    loading.value = false
+  }
 }
+
+onMounted(() => {
+  if (!currentUser) return
+  const currentUID = currentUser.uid
+
+  const qMyPoints = query(
+    collection(db, 'puntos_interes'),
+    where('autorUID', '==', currentUID)
+  )
+  onSnapshot(qMyPoints, (snap) => {
+    myPoints.value = snap.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }))
+  })
+
+  const qPublicFriends = collection(db, 'puntos_interes')
+  onSnapshot(qPublicFriends, (snap) => {
+    publicAndFriendsPoints.value = snap.docs
+      .map((doc) => ({ id: doc.id, ...doc.data() }))
+      .filter((p) => {
+        if (p.isPublic) return true
+        if (userStore.friends?.includes(p.autorUID)) return true
+        return false
+      })
+  })
+})
 </script>
 
+<template>
+  <div class="container">
+    <h1>Puntos de Interés</h1>
+
+    <form @submit.prevent="submitPoint" class="form" enctype="multipart/form-data">
+      <input v-model="pointName" placeholder="Nombre del punto" required />
+      <textarea v-model="descripcion" placeholder="Descripción"></textarea>
+
+      <input
+        type="number"
+        v-model.number="lat"
+        step="0.000001"
+        placeholder="Latitud"
+        required
+      />
+
+      <input
+        type="number"
+        v-model.number="lng"
+        step="0.000001"
+        placeholder="Longitud"
+        required
+      />
+
+      <input v-model="carpeta" placeholder="Carpeta (ej: Miradores)" required />
+
+      <label>
+        <input type="checkbox" v-model="isPublic" />
+        Público
+      </label>
+
+      <input type="file" accept="image/*" @change="onFileChange" />
+
+      <button type="submit" :disabled="loading">
+        {{ loading ? "Subiendo..." : "Añadir punto" }}
+      </button>
+    </form>
+
+    <section>
+      <h2>Mis Puntos</h2>
+      <ul>
+        <li v-for="p in myPoints" :key="p.id" class="point-item">
+          <strong>{{ p.nombre }}</strong> — {{ p.descripcion }} —
+          ({{ p.coords[0].toFixed(5) }}, {{ p.coords[1].toFixed(5) }})
+          <img
+            v-if="p.imagePath"
+            :src="p.imagePath"
+            alt="Imagen del punto"
+            class="point-image"
+          />
+        </li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Puntos Públicos y de Amigos</h2>
+      <ul>
+        <li v-for="p in publicAndFriendsPoints" :key="p.id" class="point-item">
+          <strong>{{ p.nombre }}</strong> — {{ p.descripcion }} —
+          ({{ p.coords[0].toFixed(5) }}, {{ p.coords[1].toFixed(5) }})
+          <img
+            v-if="p.imagePath"
+            :src="p.imagePath"
+            alt="Imagen del punto"
+            class="point-image"
+          />
+        </li>
+      </ul>
+    </section>
+  </div>
+</template>
+
 <style scoped>
-#map {
-  width: 100%;
+.container {
+  max-width: 600px;
+  margin: auto;
+  padding: 1rem;
 }
-.btn-primary {
-  margin-top: 1rem;
-  background-color: #2563eb;
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+input[type="number"],
+input[type="text"],
+textarea,
+input[type="file"] {
+  padding: 0.5rem;
+  font-size: 1rem;
+}
+
+textarea {
+  resize: vertical;
+  min-height: 60px;
+}
+
+button {
+  padding: 0.7rem;
+  background: #2563eb;
   color: white;
-  padding: 0.5rem 1rem;
-  border-radius: 0.5rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.point-image {
+  max-width: 100px;
+  max-height: 80px;
+  margin-left: 0.5rem;
+  vertical-align: middle;
+}
+
+.point-item {
+  margin-bottom: 0.75rem;
 }
 </style>

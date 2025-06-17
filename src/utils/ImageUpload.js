@@ -1,25 +1,32 @@
-import imageCompression from 'browser-image-compression'
-import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage'
-import { storage } from '@/firebase'
+import ImageKit from 'imagekit-javascript'
 
-export async function compressImage(file) {
-  const options = {
-    maxSizeMB: 2,
-    maxWidthOrHeight: 720,
-    useWebWorker: true
+const imagekit = new ImageKit({
+  publicKey: 'TU_PUBLIC_KEY',   // Pon aquí tu public key
+  urlEndpoint: 'https://ik.imagekit.io/CrownlessTune', // Tu url endpoint
+  authenticationEndpoint: '' // vacío para subida sin firma (público)
+})
+
+export async function uploadImage(file, userId) {
+  const folder = `/users/${userId}` // carpetas organizadas por usuario
+
+  try {
+    const response = await imagekit.upload({
+      file,
+      fileName: file.name,
+      folder
+    })
+    return {
+      url: response.url,
+      path: response.filePath
+    }
+  } catch (error) {
+    throw new Error('Error uploading image: ' + error.message)
   }
-  return await imageCompression(file, options)
-}
-
-export async function uploadImage(file, uid) {
-  const compressed = await compressImage(file)
-  const fileRef = ref(storage, `interests/${uid}/${Date.now()}-${file.name}`)
-  await uploadBytes(fileRef, compressed)
-  const url = await getDownloadURL(fileRef)
-  return { url, path: fileRef.fullPath }
 }
 
 export async function deleteImage(path) {
-  const fileRef = ref(storage, path)
-  await deleteObject(fileRef)
+  // Para eliminar imágenes con ImageKit necesitas la API privada en backend.
+  // Si no tienes backend, no podrás borrar imágenes desde frontend por seguridad.
+  // Aquí deberías llamar a tu backend que use la API privada para eliminar imágenes.
+  console.warn('deleteImage no implementado: requiere backend seguro con API privada')
 }

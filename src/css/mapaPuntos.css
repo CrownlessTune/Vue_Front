@@ -1,0 +1,113 @@
+.modal-wrapper {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  gap: 2rem;
+  padding: 1rem;
+  box-sizing: border-box;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.map-section {
+  flex: 0 0 50%;
+  max-width: 50%;
+  box-sizing: border-box;
+}
+
+.form-section {
+  flex: 0 0 50%;
+  max-width: 50%;
+  box-sizing: border-box;
+}
+
+.grid-wrapper {
+  display: grid;
+  grid-template-columns: repeat(10, 30px);
+  grid-template-rows: repeat(10, 30px);
+  gap: 2px;
+  user-select: none;
+  max-height: 320px;
+  overflow: hidden;
+  margin-bottom: 1rem;
+}
+
+.grid-tile {
+  border: 1px solid #ccc;
+  cursor: pointer;
+  position: relative;
+  background-color: #f8f8f8;
+}
+
+.grid-tile.active {
+  background-color: #cce4ff;
+}
+
+.pin {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  font-size: 18px;
+}
+
+.map-photo {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  user-select: none;
+  display: block;
+  margin-top: 1rem;
+}
+
+.coordinates-info {
+  background: #fafafa;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 0 4px #ccc;
+  margin-bottom: 1rem;
+}
+
+.btn-save {
+  margin-top: 0.5rem;
+  background-color: #2563eb;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-save:hover {
+  background-color: #1b4db2;
+}
+
+.btn-cancel {
+  margin-left: 1rem;
+  margin-top: 0.5rem;
+  background-color: #bbb;
+  color: #333;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-cancel:hover {
+  background-color: #999;
+}
+
+.warning-text {
+  color: #b91c1c;
+  background: #fee2e2;
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  margin-bottom: 1rem;
+}
+
+@media (max-width: 768px) {
+  .map-section,
+  .form-section {
+    flex: 1 1 100%;
+    max-width: 100%;
+  }
+}
