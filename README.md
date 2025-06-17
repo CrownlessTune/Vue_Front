@@ -1,5 +1,19 @@
 # Vue 3 + Vite
 
-This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+Vamos a ver, esta aplicación tiene... poder añadir imágenes, editarlas, hacerlas públicas o no, y poco más, no hace mucho, añadir amigos y poco más, es modesta, para el tiempo que tenía y sin entender nada.
 
-Learn more about IDE Support for Vue in the [Vue Docs Scaling up Guide](https://vuejs.org/guide/scaling-up/tooling.html#ide-support).
+Terminas antes mirando que haciendo yo el readme, pero, bueno.
+
+Login que te lleva directamente a la pestaña de añadir cosas.
+
+Register basado en firebase.
+
+Un perfil que no se puede editar pero puedes añadir o eliminar amigos, pero no puedes volver a ser amigos si os eliminais.
+
+Y en inicio ves las cosas públicas.
+
+Puedes cerrar sesión, y iniciar sesión, hay contexto, rutas privadas (creo), no hay 404.
+
+Hace poco, y tampoco lo hace bien, pero es lo que he podido adaptarme en este escaso tiempo.
+
+Gracias y perdón por las molestias.

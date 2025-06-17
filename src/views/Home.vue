@@ -67,6 +67,10 @@ function closeModal() {
         <p><strong>Visibilidad:</strong> {{ selectedPoint.isPublic ? 'Público' : 'Privado' }}</p>
       </div>
     </div>
+
+    <router-link to="/contacto" class="btn-contact">
+      Contactos
+    </router-link>
   </main>
 </template>
 
@@ -217,5 +221,25 @@ header h1 {
 
 .close-btn:hover {
   color: #0077b6;
+}
+
+.btn-contact {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  background-color: #fcbf49;
+  color: #1e1e1e;
+  padding: 0.75rem 1.25rem;
+  border-radius: 24px;
+  font-weight: 700;
+  box-shadow: 0 4px 8px rgb(0 0 0 / 0.15);
+  text-decoration: none;
+  user-select: none;
+  transition: background-color 0.3s ease;
+  z-index: 1000;
+}
+
+.btn-contact:hover {
+  background-color: #e6ae3c;
 }
 </style>

@@ -6,7 +6,6 @@
         <h2>{{ userName }}</h2>
         <div class="header-actions">
           <button class="edit-btn" @click="goToEdit">Editar perfil</button>
-          <button class="logout-btn" @click="logout">Cerrar sesión</button>
         </div>
       </div>
     </div>
@@ -67,12 +66,6 @@ const friendError = ref('')
 
 const goToEdit = () => {
   router.push('/app/edit')
-}
-
-const logout = () => {
-  userStore.logout()
-  sessionStorage.removeItem('user')
-  router.push('/login')
 }
 
 const loadUserData = () => {

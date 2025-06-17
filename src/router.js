@@ -6,6 +6,7 @@ import Register from './views/Register.vue'
 import Profile from './views/Profile.vue'
 import EditProfile from './views/EditProfile.vue'
 import NewInterest from './views/NewInterest.vue'
+import Contacto from './views/Contacto.vue'
 
 const routes = [
   {
@@ -15,6 +16,7 @@ const routes = [
       { path: '', name: 'Home', component: Home },
       { path: 'login', component: Login },
       { path: 'register', component: Register },
+      { path: 'contacto', component: Contacto },
     ]
   },
   {
