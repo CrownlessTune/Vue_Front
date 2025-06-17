@@ -8,28 +8,38 @@
 
 <style scoped>
 .public-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
   display: flex;
   justify-content: center;
   gap: 1.5rem;
-  padding: 1rem 2rem;
-  background-color: #f9f9f9;
-  border-bottom: 1px solid #ddd;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  align-items: center;
+  background-color: #f5f3f0; /* arena */
+  padding: 0 1rem;
+  height: 3rem;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  border-bottom: 2px solid #fcbf49; /* amarillo Cádiz */
+  z-index: 1000;
 }
 
 .nav-link {
-  text-decoration: none;
-  color: #2563eb;
+  color: #0077b6; /* azul Cádiz */
   font-weight: 600;
-  padding: 0.5rem 1rem;
-  border: 2px solid transparent;
-  border-radius: 6px;
-  transition: all 0.2s ease;
+  text-decoration: none;
+  font-size: 0.95rem;
+  padding: 0.3rem 0.5rem;
+  transition: color 0.2s ease;
 }
 
 .nav-link:hover {
-  background-color: #2563eb;
-  color: white;
-  border-color: #2563eb;
+  color: #90e0ef;
+  text-decoration: underline;
+}
+
+/* Para evitar que el contenido quede debajo de la navbar fija */
+body {
+  padding-top: 3rem;
 }
 </style>

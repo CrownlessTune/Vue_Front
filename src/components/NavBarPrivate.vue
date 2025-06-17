@@ -37,28 +37,25 @@ const displayNameOrEmail = computed(() => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: #f9fafb;
-  padding: 0 2rem 1rem 2rem;
-  box-shadow: 0 2px 6px rgb(0 0 0 / 0.1);
-  border-radius: 0 0 8px 8px;
-  gap: 1.5rem;
-  flex-wrap: wrap;
+  background-color: #f5f3f0; /* arena */
+  padding: 0 1rem;
+  height: 3rem;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  border-bottom: 2px solid #fcbf49; /* amarillo Cádiz */
   z-index: 1000;
-  height: 4rem; /* fija altura para mejor control */
 }
 
 .nav-link {
-  color: #2563eb;
+  color: #0077b6; /* azul Cádiz */
   font-weight: 600;
   text-decoration: none;
+  font-size: 0.95rem;
+  padding: 0.3rem 0.5rem;
   transition: color 0.2s ease;
-  display: flex;
-  align-items: center; /* centra verticalmente */
-  height: 100%; /* ocupa toda la altura del navbar */
 }
 
 .nav-link:hover {
-  color: #1e40af;
+  color: #90e0ef;
   text-decoration: underline;
 }
 
@@ -66,14 +63,12 @@ const displayNameOrEmail = computed(() => {
   background-color: #ef4444;
   color: #fff;
   border: none;
-  padding: 0.5rem 1.25rem;
+  padding: 0.35rem 0.9rem;
   border-radius: 6px;
-  cursor: pointer;
+  font-size: 0.85rem;
   font-weight: 600;
+  cursor: pointer;
   transition: background-color 0.2s ease;
-  display: flex;
-  align-items: center; /* centra verticalmente */
-  height: 100%;
 }
 
 .logout-btn:hover {
@@ -81,17 +76,16 @@ const displayNameOrEmail = computed(() => {
 }
 
 .user-info {
-  font-weight: 700;
-  font-size: 1rem;
-  display: flex;
-  align-items: center; /* centra verticalmente */
-  height: 100%;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #1e1e1e;
 }
 
-/* Evita que el contenido quede tapado por el navbar fijo */
+/* Asegura espacio para navbar fija */
 body {
-  padding-top: 4rem; /* ajusta según la altura total del navbar */
+  padding-top: 3rem;
 }
+
 </style>
 
 

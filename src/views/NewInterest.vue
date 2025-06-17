@@ -1,4 +1,5 @@
 <script setup>
+import '@/css/PuntosDeInteres.css'
 import { ref, onMounted } from 'vue'
 import {
   collection,
@@ -188,54 +189,4 @@ onMounted(() => {
   </div>
 </template>
 
-<style scoped>
-.container {
-  max-width: 600px;
-  margin: auto;
-  padding: 1rem;
-}
 
-.form {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-input[type="number"],
-input[type="text"],
-textarea,
-input[type="file"] {
-  padding: 0.5rem;
-  font-size: 1rem;
-}
-
-textarea {
-  resize: vertical;
-  min-height: 60px;
-}
-
-button {
-  padding: 0.7rem;
-  background: #2563eb;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.point-image {
-  max-width: 100px;
-  max-height: 80px;
-  margin-left: 0.5rem;
-  vertical-align: middle;
-}
-
-.point-item {
-  margin-bottom: 0.75rem;
-}
-</style>
